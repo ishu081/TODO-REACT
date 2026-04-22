@@ -5,33 +5,44 @@ function App() {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([]);
 
-  const addTask = () => {
-    if (task.trim() === "") return;
+  function addTask() {
+    if (task === "") return;
 
-    setTasks([
-      ...tasks,
-      { id: Date.now(), text: task, completed: false },
-    ]);
+    const newTask = {
+      id: Date.now(),
+      text: task,
+      completed: false,
+    };
+
+    setTasks([...tasks, newTask]);
     setTask("");
-  };
+  }
 
-  const handleKeyDown = (e) => {
+  function handleKey(e) {
     if (e.key === "Enter") {
       addTask();
     }
-  };
+  }
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter((t) => t.id !== id));
-  };
+  function deleteTask(id) {
+    const updatedTasks = tasks.filter(function (t) {
+      return t.id !== id;
+    });
 
-  const toggleComplete = (id) => {
-    setTasks(
-      tasks.map((t) =>
-        t.id === id ? { ...t, completed: !t.completed } : t
-      )
-    );
-  };
+    setTasks(updatedTasks);
+  }
+
+  // Mark complete
+  function toggleTask(id) {
+    const updatedTasks = tasks.map(function (t) {
+      if (t.id === id) {
+        return { ...t, completed: !t.completed };
+      }
+      return t;
+    });
+
+    setTasks(updatedTasks);
+  }
 
   return (
     <div className="container">
@@ -40,30 +51,29 @@ function App() {
       <div className="input-box">
         <input
           type="text"
+          placeholder="Enter task..."
           value={task}
-          placeholder="Enter a task..."
           onChange={(e) => setTask(e.target.value)}
-          onKeyDown={handleKeyDown}
+          onKeyDown={handleKey}
         />
+
         <button onClick={addTask}>Add</button>
       </div>
 
       <ul>
-        {tasks.map((t) => (
-          <li key={t.id} className={t.completed ? "done" : ""}>
-            <span onClick={() => toggleComplete(t.id)}>
-              {t.text}
-            </span>
+        {tasks.map(function (t) {
+          return (
+            <li key={t.id} className={t.completed ? "done" : ""}>
+              <span onClick={() => toggleTask(t.id)}>
+                {t.text}
+              </span>
 
-            {/* Cross delete button */}
-            <button
-              className="delete-btn"
-              onClick={() => deleteTask(t.id)}
-            >
-              ×
-            </button>
-          </li>
-        ))}
+              <button onClick={() => deleteTask(t.id)}>
+                ×
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
